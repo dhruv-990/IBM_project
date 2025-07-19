@@ -87,7 +87,8 @@ router.post('/buy', authenticateToken, async (req, res) => {
 router.get('/my-policies', authenticateToken, async (req, res) => {
   try {
     const policies = await Policy.find({ userId: req.user.userId })
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .maxTimeMS(15000); // 15 second timeout
     
     res.status(200).json({
       success: true,
@@ -95,28 +96,45 @@ router.get('/my-policies', authenticateToken, async (req, res) => {
     });
   } catch (err) {
     console.error('Error fetching user policies:', err);
-    res.status(500).json({ 
-      success: false,
-      message: "Server error while fetching policies",
-      error: err.message 
-    });
+    if (err.name === 'MongooseError' && err.message.includes('timed out')) {
+      res.status(503).json({ 
+        success: false,
+        message: 'Database timeout. Please try again in a moment.',
+        error: 'The database is temporarily slow. Please retry your request.'
+      });
+    } else {
+      res.status(500).json({ 
+        success: false,
+        message: "Server error while fetching policies",
+        error: err.message 
+      });
+    }
   }
 });
 
 // READ ALL - Admin only
 router.get('/', async (req, res) => {
   try {
-    const policies = await Policy.find().populate('userId', 'username email');
+    const policies = await Policy.find().populate('userId', 'username email').maxTimeMS(15000);
     res.status(200).json({
       success: true,
       policies: policies
     });
   } catch (err) {
-    res.status(500).json({ 
-      success: false,
-      message: "Server error while fetching policies",
-      error: err.message 
-    });
+    console.error('Error fetching policies:', err);
+    if (err.name === 'MongooseError' && err.message.includes('timed out')) {
+      res.status(503).json({ 
+        success: false,
+        message: 'Database timeout. Please try again in a moment.',
+        error: 'The database is temporarily slow. Please retry your request.'
+      });
+    } else {
+      res.status(500).json({ 
+        success: false,
+        message: "Server error while fetching policies",
+        error: err.message 
+      });
+    }
   }
 });
 
@@ -134,9 +152,12 @@ router.get('/:id', async (req, res) => {
 // UPDATE - Update existing policy
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
+    console.log('Policy update request:', { policyId: req.params.id, userId: req.user.userId, body: req.body });
+    
     const policy = await Policy.findById(req.params.id);
     
     if (!policy) {
+      console.log('Policy not found:', req.params.id);
       return res.status(404).json({
         success: false,
         message: 'Policy not found'
@@ -145,6 +166,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     
     // Check if user owns this policy
     if (policy.userId.toString() !== req.user.userId) {
+      console.log('Policy ownership mismatch:', { policyUserId: policy.userId.toString(), requestUserId: req.user.userId });
       return res.status(403).json({
         success: false,
         message: 'You can only update your own policies'
@@ -156,6 +178,8 @@ router.put('/:id', authenticateToken, async (req, res) => {
       req.body, 
       { new: true, runValidators: true }
     );
+    
+    console.log('Policy updated successfully:', updatedPolicy._id);
     
     res.status(200).json({
       success: true,

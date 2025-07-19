@@ -304,6 +304,7 @@
     <script src="lib/lightbox/js/lightbox.min.js"></script>
 
     <!-- Template Javascript -->
+    <script src="js/config.js"></script>
     <script src="js/main.js"></script>
 
     <script>
@@ -349,7 +350,8 @@
             const alertDiv = document.getElementById('loginAlert');
             
             try {
-                const response = await fetch('http://localhost:3000/auth/login', {
+                const apiUrl = getApiUrl();
+                const response = await fetch(`${apiUrl}/auth/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -404,7 +406,8 @@
             }
             
             try {
-                const response = await fetch('http://localhost:3000/auth/register', {
+                const apiUrl = getApiUrl();
+                const response = await fetch(`${apiUrl}/auth/register`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

@@ -99,6 +99,49 @@
         return false;
     });
 
+    // Real-time update functionality
+    window.realTimeUpdates = {
+        intervals: {},
+        
+        // Start polling for updates
+        startPolling: function(pageType, callback, interval = 30000) {
+            if (this.intervals[pageType]) {
+                clearInterval(this.intervals[pageType]);
+            }
+            
+            this.intervals[pageType] = setInterval(callback, interval);
+            console.log(`Started polling for ${pageType} updates every ${interval}ms`);
+        },
+        
+        // Stop polling
+        stopPolling: function(pageType) {
+            if (this.intervals[pageType]) {
+                clearInterval(this.intervals[pageType]);
+                delete this.intervals[pageType];
+                console.log(`Stopped polling for ${pageType}`);
+            }
+        },
+        
+        // Stop all polling
+        stopAll: function() {
+            Object.keys(this.intervals).forEach(pageType => {
+                this.stopPolling(pageType);
+            });
+        }
+    };
+
+    // Auto-refresh data when page becomes visible
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            // Page became visible, trigger a refresh
+            const currentPage = window.location.pathname.split('/').pop();
+            if (currentPage === 'policies.html' && typeof loadPolicies === 'function') {
+                loadPolicies();
+            } else if (currentPage === 'blog.html' && typeof loadBlogs === 'function') {
+                loadBlogs();
+            }
+        }
+    });
 
 })(jQuery);
 

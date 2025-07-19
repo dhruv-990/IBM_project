@@ -531,6 +531,8 @@
     <script src="lib/owlcarousel/owl.carousel.min.js"></script>
 
     <!-- Template Javascript -->
+    <script src="js/config.js"></script>
+    <script src="js/debug.js"></script>
     <script src="js/main.js"></script>
 
     <script>
@@ -579,26 +581,58 @@
             window.location.href = 'index.html';
         });
 
-        // Load user's policies
+        // Load user's policies with retry logic
         async function loadPolicies() {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('http://localhost:3000/policy/my-policies', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                const apiUrl = getApiUrl();
                 
-                const data = await response.json();
+                const fetchPolicies = async () => {
+                    const response = await fetch(`${apiUrl}/policy/my-policies`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    return await response.json();
+                };
+                
+                const data = await debugAPI.retryRequest(fetchPolicies, 3, 2000);
                 
                 if (data.success) {
                     displayPolicies(data.policies);
                     updateStats(data.policies);
                 } else {
                     console.error('Failed to load policies:', data.message);
+                    // Show user-friendly error message
+                    const container = document.getElementById('policies-container');
+                    if (container) {
+                        container.innerHTML = `
+                            <div class="col-12 text-center">
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    ${data.message || 'Failed to load policies. Please try again.'}
+                                </div>
+                            </div>`;
+                    }
                 }
             } catch (error) {
                 console.error('Error loading policies:', error);
+                // Show user-friendly error message
+                const container = document.getElementById('policies-container');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="col-12 text-center">
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Network error. Please check your connection and try again.
+                            </div>
+                        </div>`;
+                }
             }
         }
 
@@ -718,7 +752,8 @@
             
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('http://localhost:3000/policy/buy', {
+                const apiUrl = getApiUrl();
+                const response = await fetch(`${apiUrl}/policy/buy`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -738,11 +773,13 @@
                     // Reset form
                     document.getElementById('buyPolicyForm').reset();
                     
-                    // Reload policies
+                    // Reload policies immediately
+                    await loadPolicies();
+                    
+                    // Hide modal after short delay
                     setTimeout(() => {
-                        loadPolicies();
                         bootstrap.Modal.getInstance(document.getElementById('buyPolicyModal')).hide();
-                    }, 2000);
+                    }, 1500);
                 } else {
                     alertDiv.className = 'alert alert-danger';
                     alertDiv.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>' + data.message;
@@ -779,7 +816,8 @@
             
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`http://localhost:3000/policy/${policyId}`, {
+                const apiUrl = getApiUrl();
+                const response = await fetch(`${apiUrl}/policy/${policyId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -796,10 +834,13 @@
                     alertDiv.innerHTML = '<i class="fas fa-check-circle me-2"></i>' + data.message;
                     alertDiv.style.display = 'block';
                     
+                    // Reload policies immediately
+                    await loadPolicies();
+                    
+                    // Hide modal after short delay
                     setTimeout(() => {
-                        loadPolicies();
                         bootstrap.Modal.getInstance(document.getElementById('updatePolicyModal')).hide();
-                    }, 2000);
+                    }, 1500);
                 } else {
                     alertDiv.className = 'alert alert-danger';
                     alertDiv.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>' + data.message;
@@ -819,6 +860,18 @@
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             checkAuthStatus();
+            
+            // Start real-time updates for policies
+            if (typeof realTimeUpdates !== 'undefined') {
+                realTimeUpdates.startPolling('policies', loadPolicies, 30000); // Refresh every 30 seconds
+            }
+        });
+        
+        // Clean up when page unloads
+        window.addEventListener('beforeunload', function() {
+            if (typeof realTimeUpdates !== 'undefined') {
+                realTimeUpdates.stopPolling('policies');
+            }
         });
     </script>
 </body>

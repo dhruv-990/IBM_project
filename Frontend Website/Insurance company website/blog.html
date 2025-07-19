@@ -394,8 +394,10 @@
         <script src="lib/owlcarousel/owl.carousel.min.js"></script>
         
 
-        <!-- Template Javascript -->
-        <script src="js/main.js"></script>
+            <!-- Template Javascript -->
+    <script src="js/config.js"></script>
+    <script src="js/debug.js"></script>
+    <script src="js/main.js"></script>
     </body>
 
     <!-- Authentication and Blog Loading Script -->
@@ -433,11 +435,22 @@
             window.location.href = 'index.html';
         });
 
-        // Load blogs from API
+        // Load blogs from API with retry logic
         async function loadBlogs() {
             try {
-                const response = await fetch('http://localhost:3000/blog');
-                const blogs = await response.json();
+                const apiUrl = getApiUrl();
+                
+                const fetchBlogs = async () => {
+                    const response = await fetch(`${apiUrl}/blog`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    return await response.json();
+                };
+                
+                const blogs = await debugAPI.retryRequest(fetchBlogs, 3, 2000);
                 
                 const container = document.getElementById("blog-container");
                 container.innerHTML = "";
@@ -527,7 +540,8 @@
             }
             
             try {
-                const response = await fetch(`http://localhost:3000/blog/${blogId}`, {
+                const apiUrl = getApiUrl();
+                const response = await fetch(`${apiUrl}/blog/${blogId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -538,7 +552,8 @@
                 
                 if (data.success) {
                     alert('Blog deleted successfully!');
-                    loadBlogs(); // Reload blogs
+                    // Reload blogs immediately
+                    await loadBlogs();
                 } else {
                     alert(data.message || 'Failed to delete blog');
                 }
@@ -552,6 +567,18 @@
         document.addEventListener('DOMContentLoaded', function() {
             checkAuthStatus();
             loadBlogs();
+            
+            // Start real-time updates for blogs
+            if (typeof realTimeUpdates !== 'undefined') {
+                realTimeUpdates.startPolling('blogs', loadBlogs, 30000); // Refresh every 30 seconds
+            }
+        });
+        
+        // Clean up when page unloads
+        window.addEventListener('beforeunload', function() {
+            if (typeof realTimeUpdates !== 'undefined') {
+                realTimeUpdates.stopPolling('blogs');
+            }
         });
     </script>
       
