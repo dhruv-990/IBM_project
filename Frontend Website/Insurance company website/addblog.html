@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Blog</title>
+</head>
+<body>
+  <h2>Add Blog Post</h2>
+  <form id="blogForm">
+    <input type="text" id="title" placeholder="Title" required><br><br>
+    <textarea id="content" placeholder="Content" required></textarea><br><br>
+    <input type="text" id="author" placeholder="Author" required><br><br>
+    <button type="submit">Submit Blog</button>
+  </form>
+
+  <script>
+    document.getElementById('blogForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const blogData = {
+        title: document.getElementById('title').value,
+        content: document.getElementById('content').value,
+        author: document.getElementById('author').value
+      };
+
+      fetch('http://localhost:3000/blog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(blogData)
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert('✅ Blog added!');
+        console.log(data);
+      })
+      .catch(err => {
+        alert('❌ Failed to add blog');
+        console.error(err);
+      });
+    });
+  </script>
+</body>
+</html>

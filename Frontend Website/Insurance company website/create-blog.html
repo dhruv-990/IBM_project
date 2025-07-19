@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Create Blog - LifeSure Insurance</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:slnt,wght@-10..0,100..900&display=swap"
+        rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link rel="stylesheet" href="lib/animate/animate.min.css" />
+    <link href="lib/lightbox/css/lightbox.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- Quill Editor CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+    <style>
+        .blog-editor-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+        }
+
+        .blog-editor-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .blog-editor-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .blog-editor-content {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px 20px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .btn-blog {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-blog:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .ql-editor {
+            min-height: 300px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .blog-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .category-tag {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-tag:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .category-tag.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .alert {
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .insurance-topics {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .topic-suggestion {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .topic-suggestion:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        .topic-suggestion h6 {
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .topic-suggestion p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Spinner Start -->
+    <div id="spinner"
+        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+
+    <!-- Topbar Start -->
+    <div class="container-fluid topbar px-0 px-lg-4 bg-light py-2 d-none d-lg-block">
+        <div class="container">
+            <div class="row gx-0 align-items-center">
+                <div class="col-lg-8 text-center text-lg-start mb-lg-0">
+                    <div class="d-flex flex-wrap">
+                        <div class="border-end border-primary pe-3">
+                            <a href="#" class="text-muted small"><i
+                                    class="fas fa-map-marker-alt text-primary me-2"></i>Find A Location</a>
+                        </div>
+                        <div class="ps-3">
+                            <a href="mailto:example@gmail.com" class="text-muted small"><i
+                                    class="fas fa-envelope text-primary me-2"></i>example@gmail.com</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center text-lg-end">
+                    <div class="d-flex justify-content-end">
+                        <div class="d-flex border-end border-primary pe-3">
+                            <a class="btn p-0 text-primary me-3" href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn p-0 text-primary me-3" href="#"><i class="fab fa-twitter"></i></a>
+                            <a class="btn p-0 text-primary me-3" href="#"><i class="fab fa-instagram"></i></a>
+                            <a class="btn p-0 text-primary me-0" href="#"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+
+    <!-- Navbar Start -->
+    <div class="container-fluid nav-bar px-0 px-lg-4 py-lg-0">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <a href="#" class="navbar-brand p-0">
+                    <h1 class="text-primary mb-0"><i class="fab fa-slack me-2"></i> LifeSure</h1>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                    <span class="fa fa-bars"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <div class="navbar-nav mx-0 mx-lg-auto">
+                        <a href="index.html" class="nav-item nav-link">Home</a>
+                        <a href="about.html" class="nav-item nav-link">About</a>
+                        <a href="service.html" class="nav-item nav-link">Services</a>
+                        <a href="blog.html" class="nav-item nav-link">Blog</a>
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link" data-bs-toggle="dropdown">
+                                <span class="dropdown-toggle">Pages</span>
+                            </a>
+                            <div class="dropdown-menu">
+                                <a href="feature.html" class="dropdown-item">Our Features</a>
+                                <a href="team.html" class="dropdown-item">Our team</a>
+                                <a href="testimonial.html" class="dropdown-item">Testimonial</a>
+                                <a href="FAQ.html" class="dropdown-item">FAQs</a>
+                                <a href="404.html" class="dropdown-item">404 Page</a>
+                            </div>
+                        </div>
+                        <a href="contact.html" class="nav-item nav-link">Contact</a>
+                        <div class="nav-btn px-3">
+                            <button class="btn-search btn btn-primary btn-md-square rounded-circle flex-shrink-0"
+                                data-bs-toggle="modal" data-bs-target="#searchModal"><i
+                                    class="fas fa-search"></i></button>
+                            <!-- Login button - shown when user is not logged in -->
+                            <a href="login.html" id="loginBtn" class="btn btn-primary rounded-pill py-2 px-4 ms-3 flex-shrink-0">Login</a>
+                            
+                            <!-- User info - shown when user is logged in -->
+                            <div id="userInfo" class="d-none">
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-primary rounded-pill py-2 px-4 ms-3 dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-user me-2"></i><span id="userName">User</span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog me-2"></i>Profile</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <!-- Navbar End -->
+
+    <!-- Blog Editor Container Start -->
+    <div class="blog-editor-container">
+        <div class="blog-editor-card">
+            <div class="blog-editor-header">
+                <h1><i class="fas fa-edit me-3"></i>Create Your Insurance Blog</h1>
+                <p class="mb-0">Share your knowledge and insights about insurance with our LifeSure community</p>
+            </div>
+            
+            <div class="blog-editor-content">
+                <!-- Authentication Check -->
+                <div id="authCheck" class="alert alert-warning" style="display: none;">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    You need to be logged in to create a blog post. 
+                    <a href="login.html" class="alert-link">Login here</a>
+                </div>
+
+                <!-- Blog Form -->
+                <form id="blogForm" style="display: none;">
+                    <div id="blogAlert" class="alert" style="display: none;"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="blogTitle" class="form-label">Blog Title *</label>
+                                <input type="text" class="form-control" id="blogTitle" placeholder="Enter an engaging title for your blog post" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="blogContent" class="form-label">Blog Content *</label>
+                                <div id="editor"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="blogCategory" class="form-label">Category *</label>
+                                <select class="form-control" id="blogCategory" required>
+                                    <option value="">Select a category</option>
+                                    <option value="Life Insurance">Life Insurance</option>
+                                    <option value="Health Insurance">Health Insurance</option>
+                                    <option value="Auto Insurance">Auto Insurance</option>
+                                    <option value="Home Insurance">Home Insurance</option>
+                                    <option value="Business Insurance">Business Insurance</option>
+                                    <option value="Travel Insurance">Travel Insurance</option>
+                                    <option value="Insurance Tips">Insurance Tips</option>
+                                    <option value="Insurance News">Insurance News</option>
+                                    <option value="Claims Guide">Claims Guide</option>
+                                    <option value="Policy Reviews">Policy Reviews</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="blogTags" class="form-label">Tags</label>
+                                <input type="text" class="form-control" id="blogTags" placeholder="Enter tags separated by commas">
+                                <small class="text-muted">Example: insurance, tips, coverage, claims</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="blogImage" class="form-label">Featured Image URL</label>
+                                <input type="url" class="form-control" id="blogImage" placeholder="https://example.com/image.jpg">
+                                <small class="text-muted">Optional: Add an image URL for your blog post</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="blogExcerpt" class="form-label">Brief Description</label>
+                                <textarea class="form-control" id="blogExcerpt" rows="3" placeholder="Write a brief description of your blog post"></textarea>
+                                <small class="text-muted">This will appear as a preview on the blog listing page</small>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-blog">
+                                    <i class="fas fa-paper-plane me-2"></i>Publish Blog Post
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="saveDraft()">
+                                    <i class="fas fa-save me-2"></i>Save as Draft
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Insurance Topics Suggestions -->
+                <div class="insurance-topics">
+                    <h5><i class="fas fa-lightbulb me-2"></i>Blog Topic Suggestions</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="topic-suggestion" onclick="fillTopic('How to Choose the Right Life Insurance Policy', 'Life Insurance')">
+                                <h6>Life Insurance Guide</h6>
+                                <p>How to choose the right life insurance policy for your family's needs</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="topic-suggestion" onclick="fillTopic('Understanding Health Insurance Coverage', 'Health Insurance')">
+                                <h6>Health Insurance Tips</h6>
+                                <p>Understanding your health insurance coverage and benefits</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="topic-suggestion" onclick="fillTopic('Auto Insurance Claims Process', 'Auto Insurance')">
+                                <h6>Auto Insurance Claims</h6>
+                                <p>Step-by-step guide to filing auto insurance claims</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="topic-suggestion" onclick="fillTopic('Home Insurance: What You Need to Know', 'Home Insurance')">
+                                <h6>Home Insurance Basics</h6>
+                                <p>Essential information about home insurance coverage</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="topic-suggestion" onclick="fillTopic('Business Insurance for Small Companies', 'Business Insurance')">
+                                <h6>Business Insurance</h6>
+                                <p>Protecting your business with the right insurance policies</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="topic-suggestion" onclick="fillTopic('Travel Insurance: When You Need It', 'Travel Insurance')">
+                                <h6>Travel Insurance Guide</h6>
+                                <p>When and why you need travel insurance coverage</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Blog Editor Container End -->
+
+    <!-- JavaScript Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/counterup/counterup.min.js"></script>
+    <script src="lib/lightbox/js/lightbox.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Quill Editor -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+
+    <script>
+        // Hide spinner
+        setTimeout(() => {
+            document.getElementById('spinner').classList.remove('show');
+        }, 1000);
+
+        // Initialize Quill Editor
+        var quill = new Quill('#editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'align': [] }],
+                    ['link', 'image'],
+                    ['clean']
+                ]
+            },
+            placeholder: 'Write your insurance blog post here...'
+        });
+
+        // Check authentication status
+        function checkAuthStatus() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            
+            const loginBtn = document.getElementById('loginBtn');
+            const userInfo = document.getElementById('userInfo');
+            const userName = document.getElementById('userName');
+            const authCheck = document.getElementById('authCheck');
+            const blogForm = document.getElementById('blogForm');
+            
+            if (token && user.username) {
+                // User is logged in
+                loginBtn.classList.add('d-none');
+                userInfo.classList.remove('d-none');
+                userName.textContent = user.username;
+                authCheck.style.display = 'none';
+                blogForm.style.display = 'block';
+            } else {
+                // User is not logged in
+                loginBtn.classList.remove('d-none');
+                userInfo.classList.add('d-none');
+                authCheck.style.display = 'block';
+                blogForm.style.display = 'none';
+            }
+        }
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            
+            checkAuthStatus();
+            alert('You have been logged out successfully!');
+            window.location.href = 'index.html';
+        });
+
+        // Fill topic suggestion
+        function fillTopic(title, category) {
+            document.getElementById('blogTitle').value = title;
+            document.getElementById('blogCategory').value = category;
+            
+            // Add some sample content
+            quill.setText('Start writing your blog post here...\n\n');
+        }
+
+        // Save draft
+        function saveDraft() {
+            const draft = {
+                title: document.getElementById('blogTitle').value,
+                content: quill.root.innerHTML,
+                category: document.getElementById('blogCategory').value,
+                tags: document.getElementById('blogTags').value,
+                image: document.getElementById('blogImage').value,
+                excerpt: document.getElementById('blogExcerpt').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('blogDraft', JSON.stringify(draft));
+            alert('Draft saved successfully!');
+        }
+
+        // Handle blog form submission
+        document.getElementById('blogForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login to create a blog post');
+                return;
+            }
+            
+            const title = document.getElementById('blogTitle').value;
+            const content = quill.root.innerHTML;
+            const category = document.getElementById('blogCategory').value;
+            const tags = document.getElementById('blogTags').value;
+            const image = document.getElementById('blogImage').value;
+            const excerpt = document.getElementById('blogExcerpt').value;
+            
+            if (!title || !content || !category) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            const alertDiv = document.getElementById('blogAlert');
+            
+            try {
+                const response = await fetch('http://localhost:3000/blog/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        title,
+                        content,
+                        category,
+                        tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+                        image,
+                        excerpt
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alertDiv.className = 'alert alert-success';
+                    alertDiv.innerHTML = '<i class="fas fa-check-circle me-2"></i>Blog post published successfully! Redirecting to blog page...';
+                    alertDiv.style.display = 'block';
+                    
+                    // Clear draft
+                    localStorage.removeItem('blogDraft');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'blog.html';
+                    }, 2000);
+                } else {
+                    alertDiv.className = 'alert alert-danger';
+                    alertDiv.innerHTML = `<i class="fas fa-exclamation-circle me-2"></i>${data.message}`;
+                    alertDiv.style.display = 'block';
+                }
+            } catch (error) {
+                alertDiv.className = 'alert alert-danger';
+                alertDiv.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i>Network error. Please try again.';
+                alertDiv.style.display = 'block';
+            }
+        });
+
+        // Load draft on page load
+        window.addEventListener('load', () => {
+            checkAuthStatus();
+            
+            const draft = localStorage.getItem('blogDraft');
+            if (draft) {
+                const draftData = JSON.parse(draft);
+                document.getElementById('blogTitle').value = draftData.title || '';
+                document.getElementById('blogCategory').value = draftData.category || '';
+                document.getElementById('blogTags').value = draftData.tags || '';
+                document.getElementById('blogImage').value = draftData.image || '';
+                document.getElementById('blogExcerpt').value = draftData.excerpt || '';
+                
+                if (draftData.content) {
+                    quill.root.innerHTML = draftData.content;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html> 
