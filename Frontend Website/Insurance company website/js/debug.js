@@ -73,6 +73,33 @@ window.debugAPI = {
                 await new Promise(resolve => setTimeout(resolve, delay * attempt));
             }
         }
+    },
+    
+    // Test if the application is working correctly
+    testApp: async function() {
+        console.log('🧪 Testing application...');
+        
+        // Test 1: Configuration
+        this.showConfig();
+        
+        // Test 2: API Connection
+        const connectionOk = await this.testConnection();
+        if (!connectionOk) {
+            console.log('❌ API connection failed');
+            return false;
+        }
+        
+        // Test 3: Authentication (if logged in)
+        const token = localStorage.getItem('token');
+        if (token) {
+            const authOk = await this.testAuth();
+            console.log('🔐 Authentication:', authOk ? 'OK' : 'Failed');
+        } else {
+            console.log('🔐 No authentication token found (user not logged in)');
+        }
+        
+        console.log('✅ Application test completed');
+        return true;
     }
 };
 

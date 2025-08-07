@@ -37,14 +37,13 @@ app.use('/policy', policyRoutes);
 app.use('/blog', blogRoutes);
 app.use('/auth', authRoutes);
 
-// MongoDB connection with better error handling and timeout options
+// MongoDB connection with fixed options
 const mongoOptions = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 30000, // 30 seconds
   socketTimeoutMS: 45000, // 45 seconds
   bufferCommands: false,
-  bufferMaxEntries: 0,
   maxPoolSize: 10,
   minPoolSize: 1,
   maxIdleTimeMS: 30000,
